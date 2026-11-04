@@ -1,6 +1,6 @@
 {
   "name": "backstage-plugin-lightwell",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "Backstage frontend plugin for Red Hat Lightwell open source vulnerability remediation",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",

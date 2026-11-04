@@ -6,7 +6,7 @@
 [![Ecosystem](https://img.shields.io/badge/Ecosystem-Red_Hat_Developer_Hub_(RHDH)-red.svg)](https://developers.redhat.com/products/developer-hub/overview)
 [![Status](https://img.shields.io/badge/Status-Under_Active_Development-orange.svg)]()
 
-> The official Backstage & Red Hat Developer Hub (RHDH) dynamic plugin for enterprise open-source vulnerability remediation powered by **Red Hat Lightwell**.
+> Official Backstage & Red Hat Developer Hub (RHDH) dynamic plugin for enterprise open-source dependency remediation powered by **Red Hat Lightwell**.
 
 Initiated, architected, and maintained by **Maxime Gaillard** (<maxime.gaillard@devoteam.com>) — [STARTX | Part of Devoteam](https://startx.fr).
 
@@ -80,8 +80,9 @@ plugins:
     disabled: false
     pluginConfig:
       lightwell:
-        baseUrl: https://api.lightwell.example.com (or official Red Hat partner endpoint)
-        token: ***}
+        # Base URL and token provisioned through official Red Hat Partner Connect enablement kit
+        baseUrl: ${LIGHTWELL_API_BASE_URL}
+        token: ${LIGHTWELL_API_TOKEN}
 ```
 
 ---
