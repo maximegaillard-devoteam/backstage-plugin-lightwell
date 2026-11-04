@@ -80,7 +80,7 @@ plugins:
     disabled: false
     pluginConfig:
       lightwell:
-        baseUrl: https://api.lightwell.redhat.com
+        baseUrl: https://api.lightwell.example.com (or official Red Hat partner endpoint)
         token: ***}
 ```
 
