@@ -1,0 +1,26 @@
+{
+  "name": "backstage-plugin-lightwell-backend",
+  "version": "0.0.7",
+  "description": "Backstage backend plugin for Red Hat Lightwell open source vulnerability remediation",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
+  "license": "Apache-2.0",
+  "author": "Maxime Gaillard <maxime.gaillard@devoteam.com> (https://lightwell.startx.fr)",
+  "homepage": "https://lightwell.startx.fr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximegaillard-devoteam/backstage-plugin-lightwell.git"
+  },
+  "keywords": [
+    "backstage",
+    "plugin",
+    "backend",
+    "redhat",
+    "lightwell",
+    "rhdh",
+    "janus-idp",
+    "security",
+    "cve",
+    "remediation"
+  ]
+}
