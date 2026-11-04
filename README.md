@@ -4,10 +4,17 @@
 [![npm version](https://img.shields.io/npm/v/backstage-plugin-lightwell.svg?color=blue&label=npm%20frontend)](https://www.npmjs.com/package/backstage-plugin-lightwell)
 [![npm version](https://img.shields.io/npm/v/backstage-plugin-lightwell-backend.svg?color=blue&label=npm%20backend)](https://www.npmjs.com/package/backstage-plugin-lightwell-backend)
 [![Ecosystem](https://img.shields.io/badge/Ecosystem-Red_Hat_Developer_Hub_(RHDH)-red.svg)](https://developers.redhat.com/products/developer-hub/overview)
+[![Status](https://img.shields.io/badge/Status-Under_Active_Development-orange.svg)]()
 
 > The official Backstage & Red Hat Developer Hub (RHDH) dynamic plugin for enterprise open-source vulnerability remediation powered by **Red Hat Lightwell**.
 
-Initiated, architected, and maintained by **Maxime Gaillard** ([STARTX | Part of Devoteam](https://startx.fr)).
+Initiated, architected, and maintained by **Maxime Gaillard** (<maxime.gaillard@devoteam.com>) — [STARTX | Part of Devoteam](https://startx.fr).
+
+---
+
+> 🚧 **Notice: Upcoming Code Delivery**  
+> This plugin is currently under active engineering by STARTX | Part of Devoteam.  
+> The core implementation, UI components, and Lightwell Network API integrations will be delivered and released shortly in the upcoming `v0.1.0` milestone.
 
 ---
 
@@ -74,7 +81,7 @@ plugins:
     pluginConfig:
       lightwell:
         baseUrl: https://api.lightwell.redhat.com
-        token: ${LIGHTWELL_API_TOKEN}
+        token: ***}
 ```
 
 ---

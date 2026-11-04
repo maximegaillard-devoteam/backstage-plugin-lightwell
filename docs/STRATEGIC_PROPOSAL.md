@@ -6,19 +6,22 @@
 - **Recipients:** Christophe Larue & Devoteam Group Leadership
 - **Date:** November 4, 2026
 - **Classification:** Confidential Internal — Strategic Offering Proposal (Red Hat & IBM Partner Ecosystem)
+- **Official Repository:** <https://github.com/maximegaillard-devoteam/backstage-plugin-lightwell>
+- **npm Registry:** <https://www.npmjs.com/package/backstage-plugin-lightwell>
+- **Enterprise Portal:** <https://lightwell.startx.fr>
 
 ---
 
 ## Executive Summary
 
-The enterprise software security ecosystem faces a critical bottleneck: **security scanning tools (SCA, SAST) detect vulnerabilities faster than ever, but development teams cannot deploy fixes without breaking mission-critical applications**. This industry challenge is formally identified by Red Hat and IBM as the **"Vulnerability Remediation Gap"**.
+The enterprise software security ecosystem faces a critical bottleneck: **security scanning tools (SCA, SAST) detect vulnerabilities faster than ever, but engineering teams are frequently unable to remediate them without breaking mission-critical applications**. This industry challenge is formally identified by Red Hat and IBM as the **"Vulnerability Remediation Gap"**.
 
 To solve this, Red Hat launched **Lightwell** in 2026: a sovereign offering providing enterprise open-source libraries (Java, Python) with security fixes (CVEs) backported and cryptographically signed on the exact versions in production, completely eliminating breaking changes and costly major-version refactorings.
 
 Concurrently, **Red Hat Developer Hub (RHDH)**, based on the open-source **Spotify Backstage** framework, has established itself as the standard Internal Developer Portal (IDP) across Global 2000 enterprises deploying Red Hat OpenShift.
 
 **The Strategic Opportunity for STARTX & Devoteam:**
-Build and publish the world's first Backstage / RHDH plugin dedicated to Lightwell: **`plugin-lightwell`**. This plugin empowers developers to view vulnerability status directly on their component card within their daily developer portal, and automatically consume Red Hat-remediated and signed packages without disrupting application code.
+Build and publish the world's first Backstage / RHDH dynamic plugin dedicated to Lightwell: **`plugin-lightwell`**. This plugin empowers developers to view vulnerability status directly on their component card within their daily developer portal, and automatically consume Red Hat-remediated and signed packages without disrupting application code.
 
 ---
 
@@ -31,7 +34,7 @@ In highly regulated sectors (Banking, Financial Services, Telecommunications, Pu
 When a critical CVE is disclosed:
 1. Conventional scanners (Snyk, SonarQube, GitHub Dependabot, Trivy) flag the vulnerability.
 2. Their standard recommendation is invariably: *"Upgrade to the latest major release (e.g., Spring 4.x to 6.x or Python 2 to 3)"*.
-3. **The Roadblock:** Major version bumps introduce breaking API changes, extensive regression testing cycles, and lengthy compliance recertifications.
+3. **The Roadblock:** Major version bumps introduce breaking API changes, extensive regression testing cycles, and lengthy PSSI recertification delays.
 4. **The Consequence:** Enterprises carry persistent security exceptions (*risk acceptance*), maintain precarious private forks, or leave critical systems exposed.
 
 ---
@@ -81,9 +84,53 @@ An exhaustive audit of public Backstage and Janus-IDP plugins reveals four main 
 
 ---
 
-## 4. Target Offering Architecture: `plugin-lightwell` for RHDH & Backstage
+## 4. Technical Feasibility & Engineering Complexity Assessment
 
-### 4.1. Functional Architecture Diagram
+### 4.1. Why Backstage Plugin Development is Highly Accelerated (The "80/20" Rule)
+Developing a Backstage plugin does **not** mean writing a full web application from scratch. The Spotify Backstage framework and the Red Hat Developer Hub SDK provide over **80% of the UI and plumbing out of the box**:
+
+* **Pre-Built Design System (`@backstage/core-components`):**
+  * Sortable and filterable data grids (`<Table>`).
+  * Structured summary containers (`<InfoCard>`).
+  * Industry-standard severity indicators (`<StatusError>`, `<StatusWarning>`, `<StatusOK>`).
+  * Automatic dark/light theme switching and responsive layout.
+* **Declarative Entity Attachment:**
+  * Injecting the plugin into any microservice or component requires only a single declarative annotation in the target repository's `catalog-info.yaml` (e.g., `lightwell.redhat.com/enabled: true`).
+* **Automated Scaffolding:**
+  * Red Hat's official CLI tool (`@janus-idp/cli`) scaffolds the entire project structure (TypeScript configs, Jest test runners, linting, packaging) in a single command.
+
+### 4.2. Core Engineering Effort (Where Value is Actually Built)
+The bespoke engineering effort is strictly focused on three specific, well-defined technical modules:
+1. **Dependency Extraction & SBOM Ingestion (Backend):**
+   * Parsing project dependency manifests (`pom.xml` for Maven, `requirements.txt` / `Pipfile` for Python) or reading standard **CycloneDX / SPDX SBOMs** generated during CI.
+   * *Accelerator:* Leveraging mature open-source parsers (e.g., `@cyclonedx/cyclonedx-library`, `fast-xml-parser`).
+2. **Lightwell API Integration & Caching Layer (Backend):**
+   * A resilient Node.js / Express service that sends `(package, version)` tuples to the Lightwell Network REST API.
+   * In-memory or Redis caching to ensure sub-100ms response times and prevent rate-limiting.
+3. **One-Click Remediation Component (Frontend):**
+   * UI modal generating copyable dependency replacement snippets (Maven XML, pip commands) pointing to the enterprise's private Lightwell repository.
+
+---
+
+## 5. Open-Source Architectural Blueprints & References
+
+We do not need to invent new architectural patterns. The project directly builds upon proven, production-grade open-source blueprints:
+
+1. **UI & Data Presentation Blueprint: `@roadiehq/backstage-plugin-security-insights`**
+   * The benchmark open-source plugin for vulnerability visualization in Backstage.
+   * *What we borrow:* Vulnerability table design, severity filtering tabs, and entity overview summary cards.
+2. **Red Hat Enterprise Architecture Blueprint: `@redhatinsights/backstage-plugin-advanced-cluster-security` (RHACS)**
+   * Red Hat's official plugin for OpenShift container security.
+   * *What we borrow:* Red Hat's canonical backend-to-frontend communication pattern, secure API token handling, and RHDH configuration schema.
+3. **Packaging & CI/CD Blueprint: `github.com/janus-idp/backstage-plugins`**
+   * The upstream monorepo maintained by Red Hat engineering for all official RHDH dynamic plugins (Tekton, Quay, Keycloak, Topology).
+   * *What we borrow:* GitHub Actions build pipelines, automated linting, and `@janus-idp/cli package export-dynamic-plugin` bundling scripts.
+
+---
+
+## 6. Functional Architecture & Developer Experience
+
+### 6.1. System Architecture Diagram
 
 ```text
        [ Developer on Backstage / RHDH ]
@@ -111,7 +158,7 @@ An exhaustive audit of public Backstage and Janus-IDP plugins reveals four main 
                        (Signed Red Hat Java / PyPI Packages)
 ```
 
-### 4.2. Developer Experience (DX)
+### 6.2. Developer Experience (DX)
 1. The developer inspects their microservice in Red Hat Developer Hub.
 2. The backend plugin analyzes dependencies from the Git repository or CI-generated SBOM.
 3. If an eligible vulnerability is detected (e.g., `org.apache.logging.log4j:log4j-core:2.14.0`):
@@ -130,13 +177,13 @@ An exhaustive audit of public Backstage and Janus-IDP plugins reveals four main 
 
 ---
 
-## 5. Strategic Alignment with Devoteam & Christophe Larue
+## 7. Strategic Alignment with Devoteam & Christophe Larue
 
-### 5.1. Devoteam Institute & Open Source Center of Excellence
+### 7.1. Devoteam Institute & Open Source Center of Excellence
 * **Christophe Larue** oversees official technical education (Red Hat Global Learning Services) and high-level certifications within Devoteam Institute.
 * This initiative elevates Devoteam from a conventional reseller or staffing firm to a **first-tier software solution partner and innovator in the Red Hat ecosystem**.
 
-### 5.2. Commercial Monetization & Enterprise Revenue
+### 7.2. Commercial Monetization & Enterprise Revenue
 1. **Target Account Penetration:** The Ideal Customer Profile (ICP) for Lightwell matches Devoteam's enterprise accounts (Banking, Telecoms, Public Sector).
 2. **High-Margin Consulting Services:**
    * *Lightwell Readiness Assessment* (dependency debt & audit).
@@ -148,30 +195,30 @@ An exhaustive audit of public Backstage and Janus-IDP plugins reveals four main 
 
 ---
 
-## 6. Implementation Roadmap
+## 8. Sizing & Implementation Roadmap (15 to 20 Man-Days)
 
-### 6.1. Technical Stack
-* TypeScript / Node.js 20 LTS.
-* Framework: Backstage CLI and `@janus-idp/cli` (RHDH Dynamic Plugin specification).
-* Target Platform: Red Hat OpenShift Container Platform & Red Hat Developer Hub.
+For a senior full-stack TypeScript / React engineer familiar with OpenShift and Backstage:
 
-### 6.2. 3-Phase Delivery Plan (Estimated Effort: 15–20 Man-Days)
-* **Phase 1 — PoC & UI Scaffolding (4 days):**
-  * Generate dynamic plugin structure with `@janus-idp/cli`.
-  * Emulate Lightwell API data (Java Spring / Log4j real-world mock fixtures).
-  * Validate UI components inside a local RHDH instance.
-* **Phase 2 — Connected MVP & SBOM Parser (8 days):**
-  * Implement backend client for live Lightwell Network API.
+* **Phase 1 — PoC & UI Scaffolding (3–4 days):**
+  * Scaffold dynamic plugin structure using `@janus-idp/cli`.
+  * Emulate Lightwell API data with realistic mock fixtures (real-world Log4j / Spring Boot CVEs).
+  * Validate UI components inside a local Backstage / RHDH instance.
+* **Phase 2 — Connected MVP & SBOM Parser (8–10 days):**
+  * Implement backend client connecting to live Lightwell Network API endpoints.
   * Ingest Maven (`pom.xml`), Python (`requirements.txt`), and CycloneDX SBOMs.
-  * Package as an RHDH Dynamic Plugin for OpenShift.
-* **Phase 3 — Enterprise Hardening & Ecosystem Launch (5 days):**
+  * Implement caching and error resilience.
+  * Validate dynamic plugin injection on a live Red Hat OpenShift cluster.
+* **Phase 3 — Enterprise Hardening & Ecosystem Launch (3–4 days):**
+  * Automated unit & integration testing suite (Jest).
   * Technical Architecture Documentation (TAD).
-  * Devoteam / STARTX joint commercial collateral.
-  * Formal presentation to Red Hat RHDH & Lightwell product leadership.
+  * Joint Devoteam / STARTX commercial pitch deck.
+  * Formal presentation to Red Hat Developer Hub & Lightwell product leadership.
+
+**Total Project Effort: 15 to 20 Man-Days** (< 1 month of senior engineering).
 
 ---
 
-## 7. Official Verifiable References
+## 9. Official Verifiable References
 
 All technical and commercial claims in this document are grounded in the following verified source materials:
 
